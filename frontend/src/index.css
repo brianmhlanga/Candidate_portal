@@ -1,0 +1,117 @@
+@import url(https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap);
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #1a1a1a;
+  color: #fff;
+  font-family: Montserrat, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/* Gold accent colors */
+.gold-text {
+  color: #d4af37;
+}
+
+.gold-border {
+  border-color: #d4af37;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d4af37;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #b8960c;
+}
+
+/* Ensure inputs, textareas, and selects have white text */
+input,
+textarea,
+select {
+  color: #fff !important;
+  background-color: #2a2a2a !important;
+  border-color: #444 !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #d4af37 !important;
+  box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25) !important;
+}
+
+/* Bootstrap overrides for dark theme */
+.form-control {
+  background-color: #2a2a2a;
+  border-color: #444;
+  color: #fff;
+}
+
+.form-control:focus {
+  background-color: #2a2a2a;
+  border-color: #d4af37;
+  color: #fff;
+}
+
+.btn-primary {
+  background-color: #d4af37;
+  border-color: #d4af37;
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background-color: #b8960c;
+  border-color: #b8960c;
+  color: #1a1a1a;
+}
+
+.card {
+  background-color: #2a2a2a;
+  border-color: #444;
+  color: #fff;
+}
+
+.table {
+  color: #fff;
+}
+
+.table-dark {
+  background-color: #2a2a2a;
+}
+
+a {
+  color: #d4af37;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #b8960c;
+}

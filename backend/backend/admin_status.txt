@@ -1,0 +1,3 @@
+Success: Admin user created/found.
+Email: admin@example.com
+Password: password123

@@ -1,0 +1,45 @@
+.candidates-table {
+    background-color: #2a2a2a;
+    color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.candidates-table thead {
+    background-color: #1a1a1a;
+}
+
+.candidates-table thead th {
+    color: #d4af37;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    padding: 1rem;
+    border-bottom: 2px solid #d4af37;
+}
+
+.candidates-table tbody tr {
+    border-bottom: 1px solid #444;
+    transition: background-color 0.3s ease;
+}
+
+.candidates-table tbody tr:hover {
+    background-color: #333;
+}
+
+.candidates-table tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+.btn-outline-primary {
+    border-color: #d4af37;
+    color: #d4af37;
+}
+
+.btn-outline-primary:hover {
+    background-color: #d4af37;
+    border-color: #d4af37;
+    color: #1a1a1a;
+}

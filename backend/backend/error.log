@@ -1,0 +1,10 @@
+SequelizeConnectionRefusedError\nSequelizeConnectionRefusedError
+    at ConnectionManager.connect (D:\React js\3 percent\node_modules\sequelize\lib\dialects\mariadb\connection-manager.js:87:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async ConnectionManager._connect (D:\React js\3 percent\node_modules\sequelize\lib\dialects\abstract\connection-manager.js:222:24)
+    at async D:\React js\3 percent\node_modules\sequelize\lib\dialects\abstract\connection-manager.js:174:32
+    at async ConnectionManager.getConnection (D:\React js\3 percent\node_modules\sequelize\lib\dialects\abstract\connection-manager.js:197:7)
+    at async D:\React js\3 percent\node_modules\sequelize\lib\sequelize.js:305:26
+    at async MySQLQueryInterface.tableExists (D:\React js\3 percent\node_modules\sequelize\lib\dialects\abstract\query-interface.js:102:17)
+    at async Question.sync (D:\React js\3 percent\node_modules\sequelize\lib\model.js:939:21)
+    at async Sequelize.sync (D:\React js\3 percent\node_modules\sequelize\lib\sequelize.js:377:9)
