@@ -26,12 +26,7 @@ const Dashboard = () => {
     ];
 
     useEffect(() => {
-        if (loading) return;
-
-        if (!user) {
-            navigate('/login');
-            return;
-        }
+        if (loading || !user) return;
 
         // Set current step from user's onboarding progress
         if (user.onboardingStep) {

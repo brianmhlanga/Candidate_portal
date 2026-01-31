@@ -28,12 +28,6 @@ const AdminDashboard = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const adminToken = localStorage.getItem('adminToken');
-        if (!adminToken) {
-            navigate('/admin/login');
-            return;
-        }
-
         fetchDashboardStats();
     }, [navigate]);
 
@@ -44,7 +38,12 @@ const AdminDashboard = () => {
             const response = await api.get('/admin/dashboard/stats', {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setStats(response.data);
+
+            if (response.data && typeof response.data === 'object') {
+                setStats(response.data);
+            } else {
+                console.error('Invalid dashboard data format:', response.data);
+            }
         } catch (error) {
             console.error('Failed to fetch dashboard stats:', error);
         } finally {

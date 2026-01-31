@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Container, Badge, Button, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { Video, X, Check, Trash2, Play } from 'lucide-react';
+import { Video, X, Check, Trash2, Play, User } from 'lucide-react';
 import AdminSidebar from '../../components/admin/AdminSidebar';
 import api from '../../services/api';
 import '../admin/AdminDashboard.css';
@@ -41,9 +41,15 @@ const AdminVideos = () => {
             const response = await api.get('/admin/videos', {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setVideos(response.data.videos || []);
+            if (response.data && Array.isArray(response.data.videos)) {
+                setVideos(response.data.videos);
+            } else {
+                setVideos([]);
+                console.warn('Invalid videos data format:', response.data);
+            }
         } catch (error) {
             console.error('Failed to fetch videos:', error);
+            setVideos([]);
         } finally {
             setLoading(false);
         }
@@ -228,6 +234,13 @@ const AdminVideos = () => {
                                                 onClick={() => handleView(video)}
                                             >
                                                 <Play size={16} /> View & Play
+                                            </Button>
+                                            <Button
+                                                className="btn-outline-gold w-100 mt-2"
+                                                size="sm"
+                                                onClick={() => navigate(`/admin/candidates/${video.userId}`)}
+                                            >
+                                                <User size={16} /> View Candidate Profile
                                             </Button>
                                             <Button
                                                 variant="outline-danger"

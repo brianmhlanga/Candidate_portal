@@ -428,47 +428,57 @@ const updateUserOnboardingData = async (req, res) => {
       message: 'An error occurred while updating onboarding data'
     });
   }
-  // Find user
-  const user = await User.findOne({ where: { email } });
-  if (!user) {
-    // Return success even if user not found to prevent enumeration
-    return res.status(200).json({
-      message: 'If values match an existing account, a password reset link has been sent.'
+};
+
+/**
+ * Request password reset
+ * @route POST /api/auth/forgot-password
+ */
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Find user
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      // Return success even if user not found to prevent enumeration
+      return res.status(200).json({
+        message: 'If values match an existing account, a password reset link has been sent.'
+      });
+    }
+
+    // Generate reset token (1 hour expiration)
+    // We strictly use a different secret or specific payload to distinguish from auth tokens if needed,
+    // but here we'll use the main secret with a specific purpose claim.
+    const resetToken = jwt.sign(
+      { id: user.id, purpose: 'password_reset' },
+      process.env.JWT_SECRET || 'your_jwt_secret_key',
+      { expiresIn: '1h' }
+    );
+
+    // In a real app, send email here.
+    // For this environment, we return the link as a mock.
+    const resetLink = `http://localhost:5173/reset-password?token=${resetToken}`;
+
+    console.log('------------------------------------------------');
+    console.log('MOCK EMAIL SERVICE - PASSWORD RESET');
+    console.log(`To: ${email}`);
+    console.log(`Link: ${resetLink}`);
+    console.log('------------------------------------------------');
+
+    res.status(200).json({
+      message: 'Password reset link generated (check server console)',
+      // We include the link in response ONLY for dev/testing convenience since email isn't real
+      mockLink: resetLink
+    });
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({
+      error: 'Failed to process request',
+      message: 'An error occurred while processing your request'
     });
   }
-
-  // Generate reset token (1 hour expiration)
-  // We strictly use a different secret or specific payload to distinguish from auth tokens if needed,
-  // but here we'll use the main secret with a specific purpose claim.
-  const resetToken = jwt.sign(
-    { id: user.id, purpose: 'password_reset' },
-    process.env.JWT_SECRET || 'your_jwt_secret_key',
-    { expiresIn: '1h' }
-  );
-
-  // In a real app, send email here.
-  // For this environment, we return the link as a mock.
-  const resetLink = `http://localhost:5173/reset-password?token=${resetToken}`;
-
-  console.log('------------------------------------------------');
-  console.log('MOCK EMAIL SERVICE - PASSWORD RESET');
-  console.log(`To: ${email}`);
-  console.log(`Link: ${resetLink}`);
-  console.log('------------------------------------------------');
-
-  res.status(200).json({
-    message: 'Password reset link generated (check server console)',
-    // We include the link in response ONLY for dev/testing convenience since email isn't real
-    mockLink: resetLink
-  });
-} catch (error) {
-  console.error('Forgot password error:', error);
-  res.status(500).json({
-    error: 'Failed to process request',
-    message: 'An error occurred while processing your request'
-  });
-}
-  };
+};
 
 /**
  * Reset password

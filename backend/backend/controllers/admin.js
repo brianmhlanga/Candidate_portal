@@ -10,32 +10,8 @@ const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Emergency admin access (no database required)
-    if (email === 'emergency@admin.com' && password === 'emergency123') {
-      console.log('🚨 Emergency admin login detected');
+    // Emergency logic removed for security
 
-      const emergencyToken = jwt.sign(
-        {
-          id: 9999,
-          email: 'emergency@admin.com',
-          role: 'admin'
-        },
-        process.env.JWT_SECRET || 'your_jwt_secret_key',
-        { expiresIn: '24h' }
-      );
-
-      return res.status(200).json({
-        message: 'Emergency admin login successful',
-        user: {
-          id: 9999,
-          email: 'emergency@admin.com',
-          firstName: 'Emergency',
-          lastName: 'Admin',
-          role: 'admin'
-        },
-        token: emergencyToken
-      });
-    }
 
     // Find user by email
     const user = await User.findOne({
@@ -558,6 +534,7 @@ const getAllVideos = async (req, res) => {
       created_at: v.createdAt,
       reviewedAt: v.reviewedAt,
       rejectionReason: v.rejectionReason,
+      userId: v.userId,
       candidateName: v.user ? `${v.user.firstName || ''} ${v.user.lastName || ''}`.trim() : 'Unknown User',
       candidate_name: v.user ? `${v.user.firstName || ''} ${v.user.lastName || ''}`.trim() : 'Unknown User'
     }));
@@ -604,6 +581,7 @@ const getAllPhotos = async (req, res) => {
       created_at: p.createdAt,
       reviewedAt: p.reviewedAt,
       rejectionReason: p.rejectionReason,
+      userId: p.userId,
       candidateName: p.user ? `${p.user.firstName || ''} ${p.user.lastName || ''}`.trim() : 'Unknown User',
       candidate_name: p.user ? `${p.user.firstName || ''} ${p.user.lastName || ''}`.trim() : 'Unknown User'
     }));
@@ -652,6 +630,7 @@ const getAllAudioRecordings = async (req, res) => {
       created_at: a.createdAt,
       reviewedAt: a.reviewedAt,
       rejectionReason: a.rejectionReason,
+      userId: a.userId,
       candidateName: a.user ? `${a.user.firstName || ''} ${a.user.lastName || ''}`.trim() : 'Unknown User',
       candidate_name: a.user ? `${a.user.firstName || ''} ${a.user.lastName || ''}`.trim() : 'Unknown User'
     }));

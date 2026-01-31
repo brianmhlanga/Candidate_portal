@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Badge, Modal, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { Image, X, Check, Trash2, Eye } from 'lucide-react';
+import { Image, X, Check, Trash2, Eye, User } from 'lucide-react';
 import AdminSidebar from '../../components/admin/AdminSidebar';
 import api from '../../services/api';
 import '../admin/AdminDashboard.css';
@@ -41,9 +41,16 @@ const AdminPhotos = () => {
             const response = await api.get('/admin/photos', {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setPhotos(response.data.photos || []);
+
+            if (response.data && Array.isArray(response.data.photos)) {
+                setPhotos(response.data.photos);
+            } else {
+                setPhotos([]);
+                console.warn('Invalid photos data format:', response.data);
+            }
         } catch (error) {
             console.error('Failed to fetch photos:', error);
+            setPhotos([]);
         } finally {
             setLoading(false);
         }
@@ -225,6 +232,13 @@ const AdminPhotos = () => {
                                                 onClick={() => handleView(photo)}
                                             >
                                                 <Eye size={16} /> View
+                                            </Button>
+                                            <Button
+                                                className="btn-outline-gold w-100 mt-2"
+                                                size="sm"
+                                                onClick={() => navigate(`/admin/candidates/${photo.userId}`)}
+                                            >
+                                                <User size={16} /> View Candidate Profile
                                             </Button>
                                             <Button
                                                 variant="outline-danger"
