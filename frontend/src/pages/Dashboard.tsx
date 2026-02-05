@@ -42,7 +42,21 @@ const Dashboard = () => {
     }, [user, loading, navigate]);
 
     const handleStepComplete = (nextStep: string) => {
-        // Mark current step as completed
+        // Handle "Finished" state - mark all steps as complete
+        if (nextStep === 'finished') {
+            const allStepIds = steps.map(s => s.id);
+            setCompletedSteps(allStepIds);
+            return;
+        }
+
+        // Handle "Reset" state - if retaking Welcome step, reset progress
+        if (currentStep === 'welcome' && nextStep === 'id-assessment') {
+            setCompletedSteps(['welcome']);
+            setCurrentStep(nextStep);
+            return;
+        }
+
+        // Standard completion flow
         if (!completedSteps.includes(currentStep)) {
             setCompletedSteps([...completedSteps, currentStep]);
         }

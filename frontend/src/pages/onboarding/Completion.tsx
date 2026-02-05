@@ -47,12 +47,14 @@ const Completion = ({ onComplete }: CompletionProps) => {
         // Refresh status and show congratulations
         setQuestionnaireCompleted(true);
         setActiveTab('summary');
+        // Signal dashboard that everything is finished
+        if (onComplete) {
+            onComplete('finished');
+        }
     };
 
-    // Calculate progress based on 6 total steps
-    // Steps completed so far: Welcome, ID Assessment, Photo, Audio, Video (5 steps)
-    // Progress = (5 / 6) * 100 = 83.33%
-    const progress = questionnaireCompleted ? 100 : Math.round((5 / 6) * 100);
+    // Calculate progress based on requirement: 87% before questionnaire, 100% after
+    const progress = questionnaireCompleted ? 100 : 87;
 
     if (loading) {
         return <div className="completion-page" style={{ color: 'white', textAlign: 'center', padding: '2rem' }}>Loading...</div>;

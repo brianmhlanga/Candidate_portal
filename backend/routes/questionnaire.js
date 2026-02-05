@@ -84,7 +84,8 @@ router.post('/', authenticate, async (req, res) => {
         references: structuredData.references,
         additionalInfo: structuredData.additionalInfo,
         consents: structuredData.consents,
-        submittedAt: new Date()
+        submittedAt: new Date(),
+        completed: true
       });
 
       console.log('Questionnaire updated successfully for user:', userId);
@@ -102,7 +103,8 @@ router.post('/', authenticate, async (req, res) => {
         references: structuredData.references,
         additionalInfo: structuredData.additionalInfo,
         consents: structuredData.consents,
-        submittedAt: new Date()
+        submittedAt: new Date(),
+        completed: true
       });
 
       console.log('Questionnaire created successfully for user:', userId);
@@ -207,7 +209,7 @@ router.get('/status', authenticate, async (req, res) => {
     });
 
     res.json({
-      completed: !!questionnaire,
+      completed: questionnaire ? !!questionnaire.completed : false,
       submittedAt: questionnaire ? questionnaire.submittedAt : null
     });
   } catch (error) {
