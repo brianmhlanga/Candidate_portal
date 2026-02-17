@@ -53,9 +53,18 @@ app.use('/api/minimal-upload', minimalUploadRoutes);
 app.use('/api/bypass', bypassRoutes);
 app.use('/api/video', videoRoutes); // NEW: Video interview questions
 
-// Root route
-app.get('/', (req, res) => {
+// Serve static files from the React frontend app
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Root route (API specific info or health check could go to /api)
+app.get('/api', (req, res) => {
   res.json({ message: 'Welcome to 3 Percent Project API' });
+});
+
+// The "catch-all" handler: for any request that doesn't
+// match one above, send back React's index.html file.
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Sync database and start server
