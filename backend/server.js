@@ -74,19 +74,39 @@ app.get('*', (req, res) => {
 
 // Sync database and start server
 const startServer = async () => {
+  console.log('=== SERVER STARTUP INITIATED ===');
+  console.log(`Node Environment: ${process.env.NODE_ENV || 'not set'}`);
+  console.log(`Port: ${PORT}`);
+  console.log(`Database Host: ${process.env.DB_HOST || 'not set'}`);
+
   try {
+    console.log('Attempting database connection...');
     await db.sequelize.authenticate();
-    console.log('Database connection established successfully.');
+    console.log('✓ Database connection established successfully.');
     await db.sequelize.sync();
-    console.log('Database synced.');
+    console.log('✓ Database synced.');
   } catch (err) {
-    console.error('Unable to connect to the database:', err.message);
+    console.error('✗ Unable to connect to the database:', err.message);
+    console.error('Stack:', err.stack);
     console.error('The application will start without a database connection. API endpoints requiring DB will fail.');
-  } finally {
+  }
+
+  try {
+    console.log(`Starting server on 0.0.0.0:${PORT}...`);
     app.listen(PORT, '0.0.0.0', () => {
-      console.log(`Server is running on port ${PORT}`);
+      console.log('==============================================');
+      console.log(`✓ SERVER IS RUNNING ON PORT ${PORT}`);
+      console.log('==============================================');
     });
+  } catch (err) {
+    console.error('✗ FATAL: Failed to start server:', err.message);
+    console.error('Stack:', err.stack);
+    process.exit(1);
   }
 };
 
-startServer();
+console.log('Executing startServer()...');
+startServer().catch(err => {
+  console.error('✗ FATAL: Unhandled error in startServer:', err);
+  process.exit(1);
+});
