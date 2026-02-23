@@ -1,6 +1,6 @@
 /**
  * PM2 ecosystem config for Candidate Portal backend.
- * Run from backend folder: pm2 start ecosystem.config.js
+ * Run from backend folder: pm2 start ecosystem.config.cjs
  */
 module.exports = {
   apps: [

@@ -1,7 +1,7 @@
 /**
  * PM2 ecosystem config for Candidate Portal frontend (Vite preview server).
  * Build first: npm run build
- * Run from frontend folder: pm2 start ecosystem.config.js
+ * Run from frontend folder: pm2 start ecosystem.config.cjs
  */
 module.exports = {
   apps: [
