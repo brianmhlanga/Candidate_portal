@@ -2,10 +2,6 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.addColumn('Users', 'role', {
-      type: Sequelize.ENUM('user', 'admin'),
-      defaultValue: 'user'
-    });
     await queryInterface.addColumn('Users', 'approvalStatus', {
       type: Sequelize.ENUM('pending', 'approved', 'rejected'),
       defaultValue: 'pending'
@@ -25,7 +21,6 @@ module.exports = {
   },
 
   down: async (queryInterface) => {
-    await queryInterface.removeColumn('Users', 'role');
     await queryInterface.removeColumn('Users', 'approvalStatus');
     await queryInterface.removeColumn('Users', 'approvedAt');
     await queryInterface.removeColumn('Users', 'approvedBy');
