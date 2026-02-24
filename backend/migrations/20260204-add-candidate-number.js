@@ -5,7 +5,6 @@ module.exports = {
         // 1. Add candidateNumber column
         await queryInterface.addColumn('Users', 'candidateNumber', {
             type: Sequelize.STRING,
-            unique: true,
             allowNull: true,
             comment: 'Unique candidate identifier (e.g. CAN-1)'
         });
