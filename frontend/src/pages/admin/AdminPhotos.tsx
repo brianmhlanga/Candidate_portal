@@ -123,6 +123,23 @@ const AdminPhotos = () => {
         return url;
     };
 
+    const getDirectBackendImageUrl = (url: string) => {
+        if (!url || url.startsWith('http')) return url;
+        return `http://${window.location.hostname}:5000${url}`;
+    };
+
+    const handleImageError = (event: React.SyntheticEvent<HTMLImageElement>, url: string) => {
+        const img = event.currentTarget;
+        // First failure: retry via direct backend URL.
+        if (!img.dataset.retryAttempted) {
+            img.dataset.retryAttempted = 'true';
+            img.src = getDirectBackendImageUrl(url);
+            return;
+        }
+        // Second failure: fallback placeholder.
+        img.src = 'https://via.placeholder.com/300x200?text=No+Image';
+    };
+
     const getStatusBadge = (status: string) => {
         const variants: { [key: string]: string } = {
             'pending': 'warning',
@@ -178,9 +195,7 @@ const AdminPhotos = () => {
                                                 src={getImageUrl(photo.file_url)}
                                                 alt={photo.candidateName}
                                                 className="media-image"
-                                                onError={(e) => {
-                                                    e.currentTarget.src = 'https://via.placeholder.com/300x200?text=No+Image';
-                                                }}
+                                                onError={(e) => handleImageError(e, photo.file_url)}
                                             />
                                             <div className="position-absolute top-0 end-0 m-2">
                                                 {getStatusBadge(photo.status)}
@@ -268,6 +283,7 @@ const AdminPhotos = () => {
                             <img
                                 src={getImageUrl(selectedPhoto.file_url)}
                                 alt={selectedPhoto.candidateName}
+                                onError={(e) => handleImageError(e, selectedPhoto.file_url)}
                                 style={{ maxWidth: '100%', maxHeight: '70vh', objectFit: 'contain' }}
                             />
                         )}
