@@ -7,6 +7,7 @@ import ConfirmationModal from '../../components/admin/ConfirmationModal';
 import api from '../../services/api';
 import '../admin/AdminDashboard.css';
 import '../admin/AdminCandidates.css';
+import './AdminQuestionnaires.css';
 
 interface Questionnaire {
     id: number;

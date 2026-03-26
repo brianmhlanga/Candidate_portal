@@ -322,6 +322,34 @@
     font-style: italic;
 }
 
+/* Key/value formatting for object-shaped questionnaire answers */
+.kv-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.kv-pair {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: baseline;
+}
+
+.kv-key {
+    color: #c9a227;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+}
+
+.kv-value {
+    color: #fff;
+}
+
+.kv-ul {
+    color: #ddd;
+}
+
 .questionnaire-table {
     width: 100%;
     border-collapse: collapse;

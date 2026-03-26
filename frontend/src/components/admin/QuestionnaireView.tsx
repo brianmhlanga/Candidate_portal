@@ -23,7 +23,7 @@ const QuestionnaireView: React.FC<QuestionnaireViewProps> = ({ data }) => {
         if (Array.isArray(value)) {
             if (value.length === 0) return <span className="not-provided">Not provided</span>;
             return (
-                <ul className="mb-0 ps-3">
+                <ul className="kv-ul mb-0 ps-3">
                     {value.map((item, index) => (
                         <li key={index}>{typeof item === 'object' ? JSON.stringify(item) : String(item)}</li>
                     ))}
@@ -35,10 +35,11 @@ const QuestionnaireView: React.FC<QuestionnaireViewProps> = ({ data }) => {
             const entries = Object.entries(value).filter(([, v]) => v !== null && v !== undefined && v !== '');
             if (entries.length === 0) return <span className="not-provided">Not provided</span>;
             return (
-                <div>
+                <div className="kv-list">
                     {entries.map(([k, v]) => (
-                        <div key={k}>
-                            <strong>{formatObjectKey(k)}:</strong> {String(v)}
+                        <div className="kv-pair" key={k}>
+                            <span className="kv-key">{formatObjectKey(k)}:</span>
+                            <span className="kv-value">{String(v)}</span>
                         </div>
                     ))}
                 </div>
