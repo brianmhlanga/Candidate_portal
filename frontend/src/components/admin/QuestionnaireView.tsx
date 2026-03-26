@@ -20,6 +20,22 @@ const QuestionnaireView: React.FC<QuestionnaireViewProps> = ({ data }) => {
             return <span className="not-provided">Not provided</span>;
         }
 
+        // Some questionnaire fields come back as JSON strings (e.g. "{...}").
+        // If we detect that shape, try parsing so we can render as key/value.
+        if (typeof value === 'string') {
+            const s = value.trim();
+            const looksLikeJsonObject = (s.startsWith('{') && s.endsWith('}')) || (s.startsWith('[') && s.endsWith(']'));
+            if (looksLikeJsonObject) {
+                try {
+                    const parsed = JSON.parse(s);
+                    return renderValue(parsed);
+                } catch {
+                    // If it's not valid JSON, fall through to plain string rendering.
+                }
+            }
+            return String(value);
+        }
+
         if (Array.isArray(value)) {
             if (value.length === 0) return <span className="not-provided">Not provided</span>;
             return (
