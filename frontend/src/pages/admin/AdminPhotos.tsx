@@ -126,7 +126,7 @@ const AdminPhotos = () => {
         return url;
     };
 
-    const handleImageError = (event: React.SyntheticEvent<HTMLImageElement>, url: string) => {
+    const handleImageError = (event: React.SyntheticEvent<HTMLImageElement>) => {
         const img = event.currentTarget;
         // Fallback placeholder only.
         img.src = 'https://via.placeholder.com/300x200?text=No+Image';
@@ -187,7 +187,7 @@ const AdminPhotos = () => {
                                                 src={getImageUrl(photo.file_url)}
                                                 alt={photo.candidateName}
                                                 className="media-image"
-                                                onError={(e) => handleImageError(e, photo.file_url)}
+                                                onError={(e) => handleImageError(e)}
                                             />
                                             <div className="position-absolute top-0 end-0 m-2">
                                                 {getStatusBadge(photo.status)}
@@ -275,7 +275,7 @@ const AdminPhotos = () => {
                             <img
                                 src={getImageUrl(selectedPhoto.file_url)}
                                 alt={selectedPhoto.candidateName}
-                                onError={(e) => handleImageError(e, selectedPhoto.file_url)}
+                                onError={(e) => handleImageError(e)}
                                 style={{ maxWidth: '100%', maxHeight: '70vh', objectFit: 'contain' }}
                             />
                         )}
