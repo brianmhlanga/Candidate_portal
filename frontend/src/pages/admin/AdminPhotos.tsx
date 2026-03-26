@@ -120,10 +120,7 @@ const AdminPhotos = () => {
     const getImageUrl = (url: string) => {
         if (!url) return '';
         if (url.startsWith('http')) return url;
-        const backendBaseUrl = import.meta.env.DEV
-            ? 'http://localhost:5000'
-            : `http://${window.location.hostname}:5000`;
-        return `${backendBaseUrl}${url}`;
+        return url;
     };
 
     const getStatusBadge = (status: string) => {

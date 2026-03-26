@@ -127,10 +127,7 @@ const AdminCandidateDetails = () => {
     const getMediaUrl = (path: string) => {
         if (!path) return '';
         if (path.startsWith('http')) return path;
-        const backendBaseUrl = import.meta.env.DEV
-            ? 'http://localhost:5000'
-            : `http://${window.location.hostname}:5000`;
-        return `${backendBaseUrl}${path}`;
+        return path;
     };
 
     if (loading) return <div className="text-center text-white p-5">Loading candidate details...</div>;

@@ -138,10 +138,7 @@ const AdminVideos = () => {
 
     const getMediaUrl = (path: string) => {
         if (path.startsWith('http')) return path;
-        const backendBaseUrl = import.meta.env.DEV
-            ? 'http://localhost:5000'
-            : `http://${window.location.hostname}:5000`;
-        return `${backendBaseUrl}${path}`;
+        return path;
     };
 
     return (
