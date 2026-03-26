@@ -119,11 +119,32 @@ const AdminPhotos = () => {
 
     const getImageUrl = (url: string) => {
         if (!url) return '';
-        if (url.startsWith('http')) return url;
-        if (url.startsWith('/uploads/')) {
-            return url.replace('/uploads/', '/api/media/');
+
+        // Backend serves photos from: /api/media/photo/:filename
+        // But uploads on disk/DB are typically stored under: /uploads/photos/:filename
+        // So we must normalize the "photos" -> "photo" segment.
+        const normalize = (raw: string) => {
+            if (!raw) return raw;
+            return raw
+                .replace('/uploads/photos/', '/api/media/photo/')
+                .replace('/uploads/photo/', '/api/media/photo/')
+                // Also handle cases where the DB stores paths without a leading slash.
+                .replace('uploads/photos/', '/api/media/photo/')
+                .replace('uploads/photo/', '/api/media/photo/')
+                // If something already got converted to /api/media/photos/... fix it too.
+                .replace('/api/media/photos/', '/api/media/photo/');
+        };
+
+        if (url.startsWith('http')) {
+            return normalize(url);
         }
-        return url;
+
+        if (url.startsWith('/uploads/')) {
+            return normalize(url);
+        }
+
+        // Fallback for unexpected formats.
+        return normalize(url);
     };
 
     const handleImageError = (event: React.SyntheticEvent<HTMLImageElement>) => {

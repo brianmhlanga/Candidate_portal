@@ -126,11 +126,28 @@ const AdminCandidateDetails = () => {
 
     const getMediaUrl = (path: string) => {
         if (!path) return '';
-        if (path.startsWith('http')) return path;
-        if (path.startsWith('/uploads/')) {
-            return path.replace('/uploads/', '/api/media/');
-        }
-        return path;
+
+        // Backend media route expects: /api/media/photo|audio|video/:filename
+        // Photos are stored as: /uploads/photos/:filename (note the plural).
+        const normalize = (raw: string) => {
+            if (!raw) return raw;
+            return raw
+                // Photos: plural in uploads, singular in API route.
+                .replace('/uploads/photos/', '/api/media/photo/')
+                .replace('/uploads/photo/', '/api/media/photo/')
+                // Also handle cases with no leading slash.
+                .replace('uploads/photos/', '/api/media/photo/')
+                .replace('uploads/photo/', '/api/media/photo/')
+                // Other media: same segment name.
+                .replace('/uploads/audio/', '/api/media/audio/')
+                .replace('/uploads/video/', '/api/media/video/')
+                // If already converted or using a generic replace, fix common variants.
+                .replace('/api/media/photos/', '/api/media/photo/');
+        };
+
+        if (path.startsWith('http')) return normalize(path);
+        if (path.startsWith('/uploads/')) return normalize(path);
+        return normalize(path);
     };
 
     if (loading) return <div className="text-center text-white p-5">Loading candidate details...</div>;
