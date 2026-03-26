@@ -122,7 +122,10 @@ const AdminAudio = () => {
     const getMediaUrl = (path: string) => {
         if (!path) return '';
         if (path.startsWith('http')) return path;
-        return `http://localhost:5000${path}`;
+        const backendBaseUrl = import.meta.env.DEV
+            ? 'http://localhost:5000'
+            : `${window.location.protocol}//${window.location.hostname}:5000`;
+        return `${backendBaseUrl}${path}`;
     };
 
     return (
