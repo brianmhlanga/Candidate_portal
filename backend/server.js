@@ -16,6 +16,7 @@ const onboardingRoutes = require('./routes/onboarding');
 const minimalUploadRoutes = require('./routes/minimal-upload');
 const bypassRoutes = require('./routes/bypass-routes');
 const videoRoutes = require('./routes/video'); // NEW
+const mediaRoutes = require('./routes/media');
 
 // Database setup
 const db = require('./models');
@@ -52,6 +53,7 @@ app.use('/api/onboarding', onboardingRoutes);
 app.use('/api/minimal-upload', minimalUploadRoutes);
 app.use('/api/bypass', bypassRoutes);
 app.use('/api/video', videoRoutes); // NEW: Video interview questions
+app.use('/api/media', mediaRoutes);
 
 // Serve static files from the React frontend app
 app.use(express.static(path.join(__dirname, 'public')));

@@ -120,23 +120,15 @@ const AdminPhotos = () => {
     const getImageUrl = (url: string) => {
         if (!url) return '';
         if (url.startsWith('http')) return url;
+        if (url.startsWith('/uploads/')) {
+            return url.replace('/uploads/', '/api/media/');
+        }
         return url;
-    };
-
-    const getDirectBackendImageUrl = (url: string) => {
-        if (!url || url.startsWith('http')) return url;
-        return `http://${window.location.hostname}:5000${url}`;
     };
 
     const handleImageError = (event: React.SyntheticEvent<HTMLImageElement>, url: string) => {
         const img = event.currentTarget;
-        // First failure: retry via direct backend URL.
-        if (!img.dataset.retryAttempted) {
-            img.dataset.retryAttempted = 'true';
-            img.src = getDirectBackendImageUrl(url);
-            return;
-        }
-        // Second failure: fallback placeholder.
+        // Fallback placeholder only.
         img.src = 'https://via.placeholder.com/300x200?text=No+Image';
     };
 

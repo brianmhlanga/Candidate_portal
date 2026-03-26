@@ -137,7 +137,11 @@ const AdminVideos = () => {
     };
 
     const getMediaUrl = (path: string) => {
+        if (!path) return '';
         if (path.startsWith('http')) return path;
+        if (path.startsWith('/uploads/')) {
+            return path.replace('/uploads/', '/api/media/');
+        }
         return path;
     };
 
