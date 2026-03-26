@@ -7,6 +7,47 @@ interface QuestionnaireViewProps {
 }
 
 const QuestionnaireView: React.FC<QuestionnaireViewProps> = ({ data }) => {
+    const formatObjectKey = (key: string) =>
+        key
+            .replace(/([A-Z])/g, ' $1')
+            .replace(/[_-]/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .replace(/^./, (s) => s.toUpperCase());
+
+    const renderValue = (value: any): React.ReactNode => {
+        if (value === null || value === undefined || value === '') {
+            return <span className="not-provided">Not provided</span>;
+        }
+
+        if (Array.isArray(value)) {
+            if (value.length === 0) return <span className="not-provided">Not provided</span>;
+            return (
+                <ul className="mb-0 ps-3">
+                    {value.map((item, index) => (
+                        <li key={index}>{typeof item === 'object' ? JSON.stringify(item) : String(item)}</li>
+                    ))}
+                </ul>
+            );
+        }
+
+        if (typeof value === 'object') {
+            const entries = Object.entries(value).filter(([, v]) => v !== null && v !== undefined && v !== '');
+            if (entries.length === 0) return <span className="not-provided">Not provided</span>;
+            return (
+                <div>
+                    {entries.map(([k, v]) => (
+                        <div key={k}>
+                            <strong>{formatObjectKey(k)}:</strong> {String(v)}
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
+        return String(value);
+    };
+
     if (!data) {
         return (
             <div className="empty-state">
@@ -110,7 +151,7 @@ const QuestionnaireView: React.FC<QuestionnaireViewProps> = ({ data }) => {
                 <div className="questionnaire-field">
                     <div className="field-label">Brief History, Achievements and Expectations</div>
                     <div className="field-value">
-                        {data.workExperience || <span className="not-provided">Not provided</span>}
+                        {renderValue(data.workExperience)}
                     </div>
                 </div>
             </div>
