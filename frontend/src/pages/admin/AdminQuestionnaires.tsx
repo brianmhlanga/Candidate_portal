@@ -53,12 +53,20 @@ const AdminQuestionnaires = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
+            const payload = Array.isArray(response.data)
+                ? response.data
+                : Array.isArray(response.data?.questionnaires)
+                    ? response.data.questionnaires
+                    : [];
+
             // Map response to match interface expectations
-            const data = (response.data || []).map((q: any) => ({
+            const data = payload.map((q: any) => ({
                 ...q,
                 title: q.title || `Questionnaire #${q.id}`,
-                candidateName: q.User ? `${q.User.firstName} ${q.User.lastName}` : (q.candidateName || 'Unknown'),
-                status: q.completed ? 'Completed' : 'Pending'
+                candidateName: q.User
+                    ? `${q.User.firstName} ${q.User.lastName}`
+                    : (q.user ? `${q.user.firstName || ''} ${q.user.lastName || ''}`.trim() : (q.candidateName || 'Unknown')),
+                status: q.status ? String(q.status) : (q.completed ? 'Completed' : 'Pending')
             }));
 
             setQuestionnaires(data);
