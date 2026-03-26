@@ -129,7 +129,7 @@ const AdminCandidateDetails = () => {
         if (path.startsWith('http')) return path;
         const backendBaseUrl = import.meta.env.DEV
             ? 'http://localhost:5000'
-            : `${window.location.protocol}//${window.location.hostname}:5000`;
+            : `http://${window.location.hostname}:5000`;
         return `${backendBaseUrl}${path}`;
     };
 

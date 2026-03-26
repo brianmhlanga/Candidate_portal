@@ -122,7 +122,7 @@ const AdminPhotos = () => {
         if (url.startsWith('http')) return url;
         const backendBaseUrl = import.meta.env.DEV
             ? 'http://localhost:5000'
-            : `${window.location.protocol}//${window.location.hostname}:5000`;
+            : `http://${window.location.hostname}:5000`;
         return `${backendBaseUrl}${url}`;
     };
 
