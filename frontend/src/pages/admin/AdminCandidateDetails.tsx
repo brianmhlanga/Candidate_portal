@@ -31,6 +31,17 @@ interface User {
 
 type TabType = 'profile' | 'media' | 'questionnaire';
 
+function parseMaybeJson(value: any): any {
+    if (typeof value !== 'string') return value;
+    const s = value.trim();
+    if (!s) return value;
+    try {
+        return JSON.parse(s);
+    } catch {
+        return value;
+    }
+}
+
 const AdminCandidateDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -156,6 +167,8 @@ const AdminCandidateDetails = () => {
     const photo = candidate.uploads?.find(u => u.type === 'photo');
     const audio = candidate.uploads?.find(u => u.type === 'audio');
     const video = candidate.uploads?.find(u => u.type === 'video');
+    const questionnairePersonalInfo = parseMaybeJson(candidate.questionnaire?.personalInfo);
+    const questionnaireContactInfo = parseMaybeJson(candidate.questionnaire?.contactInfo);
 
     return (
         <div className="admin-dashboard">
@@ -285,7 +298,8 @@ const AdminCandidateDetails = () => {
                                             <div className="info-content">
                                                 <div className="info-label">Location</div>
                                                 <div className="info-value">
-                                                    {(candidate.questionnaire?.contactInfo?.city
+                                                    {(questionnaireContactInfo?.city
+                                                        ?? candidate.questionnaire?.contactInfo?.city
                                                         ?? candidate.questionnaire?.city)
                                                         || <span className="not-provided">Not provided</span>}
                                                 </div>
@@ -296,7 +310,8 @@ const AdminCandidateDetails = () => {
                                             <div className="info-content">
                                                 <div className="info-label">Date of Birth</div>
                                                 <div className="info-value">
-                                                    {(candidate.questionnaire?.personalInfo?.dateOfBirth
+                                                    {(questionnairePersonalInfo?.dateOfBirth
+                                                        ?? candidate.questionnaire?.personalInfo?.dateOfBirth
                                                         ?? candidate.questionnaire?.dateOfBirth)
                                                         || <span className="not-provided">Not provided</span>}
                                                 </div>

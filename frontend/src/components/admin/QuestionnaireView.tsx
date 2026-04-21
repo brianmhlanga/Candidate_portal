@@ -6,24 +6,39 @@ interface QuestionnaireViewProps {
     data: any;
 }
 
+function parseMaybeJson(value: any): any {
+    if (typeof value !== 'string') return value;
+    const s = value.trim();
+    if (!s) return value;
+    try {
+        return JSON.parse(s);
+    } catch {
+        return value;
+    }
+}
+
 /** API stores questionnaire in nested JSON; admin UI expects flat fields. */
 function flattenQuestionnaireData(raw: any): any {
     if (!raw || typeof raw !== 'object') return raw;
-    const pi = raw.personalInfo;
-    if (!pi || typeof pi !== 'object') return raw;
-    const ci = raw.contactInfo && typeof raw.contactInfo === 'object' ? raw.contactInfo : {};
-    const refs = raw.references && typeof raw.references === 'object' ? raw.references : {};
-    const add = raw.additionalInfo && typeof raw.additionalInfo === 'object' ? raw.additionalInfo : {};
-    const cons = raw.consents && typeof raw.consents === 'object' ? raw.consents : {};
+    const pi = parseMaybeJson(raw.personalInfo);
+    const ci = parseMaybeJson(raw.contactInfo);
+    const refs = parseMaybeJson(raw.references);
+    const add = parseMaybeJson(raw.additionalInfo);
+    const cons = parseMaybeJson(raw.consents);
+    const normalizedPi = pi && typeof pi === 'object' ? pi : {};
+    const normalizedCi = ci && typeof ci === 'object' ? ci : {};
+    const normalizedRefs = refs && typeof refs === 'object' ? refs : {};
+    const normalizedAdd = add && typeof add === 'object' ? add : {};
+    const normalizedCons = cons && typeof cons === 'object' ? cons : {};
     return {
         ...raw,
-        ...pi,
-        ...ci,
-        previousEmployers: refs.previousEmployers ?? raw.previousEmployers,
-        referrals: refs.referrals ?? raw.referrals,
-        ...add,
-        ...cons,
-        workExperience: raw.workExperience
+        ...normalizedPi,
+        ...normalizedCi,
+        previousEmployers: normalizedRefs.previousEmployers ?? raw.previousEmployers,
+        referrals: normalizedRefs.referrals ?? raw.referrals,
+        ...normalizedAdd,
+        ...normalizedCons,
+        workExperience: parseMaybeJson(raw.workExperience)
     };
 }
 
