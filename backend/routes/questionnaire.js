@@ -4,20 +4,29 @@ const { authenticate } = require('../middleware/auth'); // CORRECT: Destructure 
 const router = express.Router();
 const questionnaireController = require('../controllers/questionnaire'); // Import controller
 
+/** Accept array or JSON string (some clients stringify nested fields). */
+function parseJsonArrayField(val) {
+  if (Array.isArray(val)) return val;
+  if (typeof val === 'string' && val.trim()) {
+    try {
+      const parsed = JSON.parse(val);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
+
+function coerceConsent(val) {
+  return val === true || val === 'true';
+}
 
 // Submit completion questionnaire (ApplicationQuestionnaire.js)
 router.post('/', authenticate, async (req, res) => {
   try {
     const { Questionnaire } = require('../models');
     const userId = req.user.id;
-    const {
-      personalInfo,
-      contactInfo,
-      workExperience,
-      references,
-      additionalInfo,
-      consents
-    } = req.body;
 
     console.log('Questionnaire submission for user:', userId);
     console.log('Request body keys:', Object.keys(req.body));
@@ -25,9 +34,10 @@ router.post('/', authenticate, async (req, res) => {
     // Relaxed validation - only check for critical mandatory fields
     // The frontend sends formData directly, not in sections
     const hasBasicInfo = req.body.firstName && req.body.lastName && req.body.emailAddress;
+    const hasIndustry = typeof req.body.industry === 'string' && req.body.industry.trim().length > 0;
 
-    if (!hasBasicInfo) {
-      console.log('Validation failed. Missing mandatory fields (firstName, lastName, emailAddress)');
+    if (!hasBasicInfo || !hasIndustry) {
+      console.log('Validation failed. Missing mandatory fields (firstName, lastName, emailAddress, industry)');
       return res.status(400).json({
         error: 'Incomplete questionnaire',
         message: 'Please fill in all mandatory fields marked with *'
@@ -42,6 +52,7 @@ router.post('/', authenticate, async (req, res) => {
         firstName: req.body.firstName || '',
         lastName: req.body.lastName || '',
         jobTitle: req.body.jobTitle || '',
+        industry: (req.body.industry && String(req.body.industry).trim()) || '',
         dateOfBirth: req.body.dateOfBirth || '',
         currently: req.body.currently || 'employed',
         driversLicense: req.body.driversLicense || 'yes',
@@ -52,10 +63,10 @@ router.post('/', authenticate, async (req, res) => {
         contactNumber: req.body.contactNumber || '',
         city: req.body.city || ''
       },
-      workExperience: req.body.workExperience || '',
+      workExperience: req.body.workExperience ?? '',
       references: {
-        previousEmployers: req.body.previousEmployers || [],
-        referrals: req.body.referrals || []
+        previousEmployers: parseJsonArrayField(req.body.previousEmployers),
+        referrals: parseJsonArrayField(req.body.referrals)
       },
       additionalInfo: {
         whereToBe5Years: req.body.whereToBe5Years || '',
@@ -64,9 +75,9 @@ router.post('/', authenticate, async (req, res) => {
         availability: req.body.availability || ''
       },
       consents: {
-        socialMediaConsent: req.body.socialMediaConsent || false,
-        radioAdvertConsent: req.body.radioAdvertConsent || false,
-        displayPictureConsent: req.body.displayPictureConsent || false
+        socialMediaConsent: coerceConsent(req.body.socialMediaConsent),
+        radioAdvertConsent: coerceConsent(req.body.radioAdvertConsent),
+        displayPictureConsent: coerceConsent(req.body.displayPictureConsent)
       }
     };
 
@@ -88,31 +99,32 @@ router.post('/', authenticate, async (req, res) => {
         completed: true
       });
 
+      await existingQuestionnaire.reload();
+
       console.log('Questionnaire updated successfully for user:', userId);
       return res.status(200).json({
         message: 'Questionnaire updated successfully',
         questionnaire: existingQuestionnaire
       });
-    } else {
-      // Create new questionnaire
-      const questionnaire = await Questionnaire.create({
-        userId,
-        personalInfo: structuredData.personalInfo,
-        contactInfo: structuredData.contactInfo,
-        workExperience: structuredData.workExperience,
-        references: structuredData.references,
-        additionalInfo: structuredData.additionalInfo,
-        consents: structuredData.consents,
-        submittedAt: new Date(),
-        completed: true
-      });
-
-      console.log('Questionnaire created successfully for user:', userId);
-      return res.status(201).json({
-        message: 'Questionnaire submitted successfully',
-        questionnaire
-      });
     }
+    // Create new questionnaire
+    const questionnaire = await Questionnaire.create({
+      userId,
+      personalInfo: structuredData.personalInfo,
+      contactInfo: structuredData.contactInfo,
+      workExperience: structuredData.workExperience,
+      references: structuredData.references,
+      additionalInfo: structuredData.additionalInfo,
+      consents: structuredData.consents,
+      submittedAt: new Date(),
+      completed: true
+    });
+
+    console.log('Questionnaire created successfully for user:', userId);
+    return res.status(201).json({
+      message: 'Questionnaire submitted successfully',
+      questionnaire
+    });
   } catch (error) {
     console.error('Error submitting questionnaire:', error);
     return res.status(500).json({

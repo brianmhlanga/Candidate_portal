@@ -6,7 +6,29 @@ interface QuestionnaireViewProps {
     data: any;
 }
 
-const QuestionnaireView: React.FC<QuestionnaireViewProps> = ({ data }) => {
+/** API stores questionnaire in nested JSON; admin UI expects flat fields. */
+function flattenQuestionnaireData(raw: any): any {
+    if (!raw || typeof raw !== 'object') return raw;
+    const pi = raw.personalInfo;
+    if (!pi || typeof pi !== 'object') return raw;
+    const ci = raw.contactInfo && typeof raw.contactInfo === 'object' ? raw.contactInfo : {};
+    const refs = raw.references && typeof raw.references === 'object' ? raw.references : {};
+    const add = raw.additionalInfo && typeof raw.additionalInfo === 'object' ? raw.additionalInfo : {};
+    const cons = raw.consents && typeof raw.consents === 'object' ? raw.consents : {};
+    return {
+        ...raw,
+        ...pi,
+        ...ci,
+        previousEmployers: refs.previousEmployers ?? raw.previousEmployers,
+        referrals: refs.referrals ?? raw.referrals,
+        ...add,
+        ...cons,
+        workExperience: raw.workExperience
+    };
+}
+
+const QuestionnaireView: React.FC<QuestionnaireViewProps> = ({ data: raw }) => {
+    const data = flattenQuestionnaireData(raw);
     const formatObjectKey = (key: string) =>
         key
             .replace(/([A-Z])/g, ' $1')
@@ -93,6 +115,14 @@ const QuestionnaireView: React.FC<QuestionnaireViewProps> = ({ data }) => {
                             <div className="field-label">Job Title</div>
                             <div className="field-value">
                                 {data.jobTitle || <span className="not-provided">Not provided</span>}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-md-6">
+                        <div className="questionnaire-field">
+                            <div className="field-label">Industry</div>
+                            <div className="field-value">
+                                {data.industry || <span className="not-provided">Not provided</span>}
                             </div>
                         </div>
                     </div>

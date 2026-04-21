@@ -265,21 +265,32 @@ const submitIdAssessment = async (req, res) => {
     const workExperience = { roleAppliedFor, yearsExperience, tools, currentSalary, expectedSalary, availability };
     const additionalInfo = { whyChooseYou };
 
-    // Default empty objects for required fields not yet filled
+    // Default empty objects for required fields not yet filled (same shape as final questionnaire)
     const contactInfo = { email: req.user.email, phone: '', city: '' };
-    const references = [];
+    const references = { previousEmployers: [], referrals: [] };
     const consents = { socialMediaConsent: false, radioAdvertConsent: false, displayPictureConsent: false };
 
     // Check if user has already started a questionnaire
     const existingQuestionnaire = await Questionnaire.findOne({ where: { userId } });
 
     if (existingQuestionnaire) {
-      await existingQuestionnaire.update({
+      const exW = existingQuestionnaire.workExperience;
+      const isIdAssessmentWork =
+        exW != null && typeof exW === 'object' && !Array.isArray(exW);
+
+      const patch = {
         personalInfo: { ...existingQuestionnaire.personalInfo, ...personalInfo },
-        workExperience: { ...existingQuestionnaire.workExperience, ...workExperience },
-        additionalInfo: { ...existingQuestionnaire.additionalInfo, ...additionalInfo },
-        completed: false // Ensure it remains incomplete until final submission
-      });
+        additionalInfo: { ...existingQuestionnaire.additionalInfo, ...additionalInfo }
+      };
+      // Final questionnaire stores workExperience as a string; do not overwrite with id-assessment object
+      if (isIdAssessmentWork) {
+        patch.workExperience = { ...exW, ...workExperience };
+      }
+      // Do not clear a completed application if this endpoint is hit again
+      if (!existingQuestionnaire.completed) {
+        patch.completed = false;
+      }
+      await existingQuestionnaire.update(patch);
     } else {
       await Questionnaire.create({
         userId,
@@ -287,8 +298,8 @@ const submitIdAssessment = async (req, res) => {
         workExperience,
         additionalInfo,
         contactInfo, // Required by model, but empty for now
-        references,  // Required by model, but empty for now
-        consents,    // Required by model, but empty for now
+        references,
+        consents,
         completed: false
       });
     }

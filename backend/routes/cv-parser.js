@@ -95,6 +95,7 @@ function parseCV(text) {
         contactNumber: '',
         city: '',
         jobTitle: '',
+        industry: '',
         professionalSummary: '',
         workExperience: '',
         expectedSalary: '',
@@ -179,6 +180,15 @@ function parseCV(text) {
             console.log('Found job title:', extracted.jobTitle);
             break;
         }
+    }
+
+    // Industry / sector from labeled lines (e.g. "Industry: Banking")
+    const industryLine = text.match(
+        /(?:^|[\r\n])\s*(?:industry|sector|field)\s*[:\-–]\s*([^\r\n]+)/i
+    );
+    if (industryLine && industryLine[1]) {
+        extracted.industry = industryLine[1].trim().substring(0, 200);
+        console.log('Found industry:', extracted.industry);
     }
 
     // Extract professional summary/objective (excluding personal profile)
@@ -385,6 +395,7 @@ function parseCV(text) {
         phone: extracted.contactNumber,
         city: extracted.city,
         jobTitle: extracted.jobTitle,
+        industry: extracted.industry,
         hasSummary: !!extracted.professionalSummary,
         hasExperience: !!extracted.workExperience,
         hasSkills: !!extracted.skills,

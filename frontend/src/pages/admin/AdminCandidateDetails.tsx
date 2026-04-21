@@ -285,7 +285,9 @@ const AdminCandidateDetails = () => {
                                             <div className="info-content">
                                                 <div className="info-label">Location</div>
                                                 <div className="info-value">
-                                                    {candidate.questionnaire?.city || <span className="not-provided">Not provided</span>}
+                                                    {candidate.questionnaire?.contactInfo?.city
+                                                        ?? candidate.questionnaire?.city
+                                                        || <span className="not-provided">Not provided</span>}
                                                 </div>
                                             </div>
                                         </div>
@@ -294,7 +296,9 @@ const AdminCandidateDetails = () => {
                                             <div className="info-content">
                                                 <div className="info-label">Date of Birth</div>
                                                 <div className="info-value">
-                                                    {candidate.questionnaire?.dateOfBirth || <span className="not-provided">Not provided</span>}
+                                                    {candidate.questionnaire?.personalInfo?.dateOfBirth
+                                                        ?? candidate.questionnaire?.dateOfBirth
+                                                        || <span className="not-provided">Not provided</span>}
                                                 </div>
                                             </div>
                                         </div>

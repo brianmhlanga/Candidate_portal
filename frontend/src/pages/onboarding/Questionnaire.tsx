@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Form, Button, Alert, Spinner, Row, Col } from 'react-bootstrap';
 import api from '../../services/api';
+import { INDUSTRY_OPTIONS, matchParsedIndustry } from '../../constants/industryOptions';
 import './OnboardingSteps.css';
 import './Questionnaire.css';
 
@@ -14,6 +15,7 @@ const Questionnaire = ({ onComplete }: QuestionnaireProps) => {
         firstName: '',
         lastName: '',
         jobTitle: '',
+        industry: '',
         dateOfBirth: '',
         currently: 'employed', // employed or looking
         driversLicense: 'yes', // yes or no
@@ -158,6 +160,7 @@ const Questionnaire = ({ onComplete }: QuestionnaireProps) => {
                     contactNumber: parsedData.contactNumber || prevData.contactNumber,
                     city: parsedData.city || prevData.city,
                     jobTitle: parsedData.jobTitle || prevData.jobTitle,
+                    industry: matchParsedIndustry(parsedData.industry) || prevData.industry,
                     workExperience: parsedData.workExperience || prevData.workExperience,
                     expectedSalary: parsedData.expectedSalary || prevData.expectedSalary,
                     previousEmployers: parsedData.previousEmployers && parsedData.previousEmployers.length > 0
@@ -201,16 +204,26 @@ const Questionnaire = ({ onComplete }: QuestionnaireProps) => {
             });
             console.log('Questionnaire submitted successfully');
 
-            // Update onboarding step
-            console.log('Updating onboarding step to completion...');
-            await api.put('/auth/onboarding-step', {
-                onboardingStep: 'completion',
-                completed: true
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            try {
+                await api.put('/auth/onboarding-step', {
+                    onboardingStep: 'completion',
+                    completed: true
+                }, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+            } catch (stepErr: any) {
+                console.error('Onboarding step update failed (questionnaire was saved):', stepErr);
+                setError(
+                    stepErr.response?.data?.message
+                        ? `Your responses were saved, but we could not update your progress: ${stepErr.response.data.message}. You can continue from your dashboard.`
+                        : 'Your responses were saved, but we could not update your onboarding step. Please refresh the page or contact support if this persists.'
+                );
+                if (onComplete) {
+                    onComplete('congratulations');
+                }
+                return;
+            }
 
-            // Call onComplete callback to notify parent component
             if (onComplete) {
                 onComplete('congratulations');
             }
@@ -237,7 +250,11 @@ const Questionnaire = ({ onComplete }: QuestionnaireProps) => {
             </div>
 
             {error && (
-                <Alert variant="danger" onClose={() => setError('')} dismissible>
+                <Alert
+                    variant={error.startsWith('Your responses were saved') ? 'warning' : 'danger'}
+                    onClose={() => setError('')}
+                    dismissible
+                >
                     {error}
                 </Alert>
             )}
@@ -358,6 +375,30 @@ const Questionnaire = ({ onComplete }: QuestionnaireProps) => {
                                 />
                             </Form.Group>
                         </Col>
+                        <Col md={6}>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Industry *</Form.Label>
+                                <Form.Select
+                                    name="industry"
+                                    value={formData.industry}
+                                    onChange={handleChange}
+                                    required
+                                >
+                                    <option value="">Select industry…</option>
+                                    {formData.industry && !(INDUSTRY_OPTIONS as readonly string[]).includes(formData.industry) && (
+                                        <option value={formData.industry}>{formData.industry}</option>
+                                    )}
+                                    {INDUSTRY_OPTIONS.map((label) => (
+                                        <option key={label} value={label}>
+                                            {label}
+                                        </option>
+                                    ))}
+                                </Form.Select>
+                            </Form.Group>
+                        </Col>
+                    </Row>
+
+                    <Row>
                         <Col md={6}>
                             <Form.Group className="mb-3">
                                 <Form.Label>Date of Birth</Form.Label>
