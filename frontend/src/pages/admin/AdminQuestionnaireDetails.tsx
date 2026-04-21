@@ -56,11 +56,11 @@ const AdminQuestionnaireDetails = () => {
                         <div className="d-flex align-items-center gap-3">
                             <div>
                                 <h1 className="candidate-name mb-1">
-                                    {candidate.questionnaire?.personalInfo?.firstName
-                                        ?? candidate.questionnaire?.firstName
+                                    {(candidate.questionnaire?.personalInfo?.firstName
+                                        ?? candidate.questionnaire?.firstName)
                                         || candidate.firstName}{' '}
-                                    {candidate.questionnaire?.personalInfo?.lastName
-                                        ?? candidate.questionnaire?.lastName
+                                    {(candidate.questionnaire?.personalInfo?.lastName
+                                        ?? candidate.questionnaire?.lastName)
                                         || candidate.lastName}
                                 </h1>
                                 <p className="text-white-50 mb-0">Questionnaire Details</p>
